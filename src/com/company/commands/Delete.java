@@ -17,6 +17,5 @@ public class Delete implements Command {
     @Override
     public void execute() {
         shapes.remove(shape);
-        System.out.println("Delete command!");
     }
 }

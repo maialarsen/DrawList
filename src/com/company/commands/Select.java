@@ -1,7 +1,6 @@
 package com.company.commands;
 
-import com.company.Command;
-import com.company.Shape;
+import com.company.*;
 
 import java.util.List;
 
@@ -16,6 +15,9 @@ public class Select implements Command {
 
     @Override
     public void execute() {
-        System.out.println(shapes.get(index));
+        if (index > shapes.size())
+            System.out.println("ERROR: invalid shape for SELECT");
+        else
+            shapes.get(index - 1).setIsSelected(new IsSelected());
     }
 }
