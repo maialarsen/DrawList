@@ -8,6 +8,14 @@ public class Circle extends Shape{
         this.radius = radius;
     }
 
+    public Circle (Circle circle) {
+        super(circle.getColor());
+        setX(circle.getX());
+        setY(circle.getY());
+        setIsSelected(circle.isSelected);
+        radius = circle.radius;
+    }
+
     public int getRadius() {
         return radius;
     }

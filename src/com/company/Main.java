@@ -8,9 +8,14 @@ import java.util.Scanner;
 
 public class Main {
     static List<Shape> shapes;
+    static CareTaker careTaker;
+    static Originator originator;
 
     public static void main(String[] args) {
         shapes = new ArrayList<>();
+        careTaker = new CareTaker();
+        originator = new Originator();
+
         String command;
         Scanner sc = new Scanner(System.in);
 
@@ -29,26 +34,40 @@ public class Main {
         return null;
     }
 
-    static void processCommand(String command) {
+    public static int findShape(Shape shape) {
+        for (int i = 0; i < shapes.size(); i++) {
+            if (shape.equals(shapes.get(i)))
+                return i;
+        }
+        return -1;
+    }
+
+    static void processCommand(String input) {
         Controller controller;
+        Command command;
         Shape shape = findSelected();
-        String[] tokens = command.split("\\]\\[|\\s*\\[|,|\\]");
+        String[] tokens = input.split("\\]\\[|\\s*\\[|,|\\]");
 
         switch (tokens[0].toLowerCase()) {
             case "create rectangle":
                 if (tokens.length != 3)
                     System.out.println("This command needs a [width] and [height]");
                 else {
-                    controller = new Controller(new CreateRectangle(shapes, Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
+                    command = new CreateRectangle(shapes, Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
+                    originator.set(new ShapeState(command, null, shapes.size()));
+                    careTaker.addMemento(originator.storeInMemento());
+                    controller = new Controller(command);
                     controller.press();
                 }
                 break;
             case "create circle":
                 if (tokens.length != 2)
                     System.out.println("This command needs a [radius]");
-
                 else {
-                    controller = new Controller(new CreateCircle(shapes, Integer.parseInt(tokens[1])));
+                    command = new CreateCircle(shapes, Integer.parseInt(tokens[1]));
+                    originator.set(new ShapeState(command, null, shapes.size()));
+                    careTaker.addMemento(originator.storeInMemento());
+                    controller = new Controller(command);
                     controller.press();
                 }
                 break;
@@ -58,7 +77,10 @@ public class Main {
                 else {
                     if (shape != null)
                         shape.setIsSelected(new IsNotSelected());
-                    controller = new Controller(new Select(shapes, Integer.parseInt(tokens[1])));
+                    command = new Select(shapes, Integer.parseInt(tokens[1]));
+                    originator.set(new ShapeState(command, Shape.copyShape(shape), shapes.indexOf(shape)));
+                    careTaker.addMemento(originator.storeInMemento());
+                    controller = new Controller(command);
                     controller.press();
                 }
                 break;
@@ -67,14 +89,20 @@ public class Main {
                     System.out.println("This command needs a [x] and [y]");
                 else {
                     if (shape != null) {
-                        controller = new Controller(new Move(shape, Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
+                        command = new Move(shape, Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
+                        originator.set(new ShapeState(command, Shape.copyShape(shape), shapes.indexOf(shape)));
+                        careTaker.addMemento(originator.storeInMemento());
+                        controller = new Controller(command);
                         controller.press();
                     } else System.out.println("No shape selected.");
                 }
                 break;
             case "draw":
                 if (shape != null) {
-                    controller = new Controller(new Draw(shape));
+                    command = new Draw(shape);
+                    originator.set(new ShapeState(command, Shape.copyShape(shape), shapes.indexOf(shape)));
+                    careTaker.addMemento(originator.storeInMemento());
+                    controller = new Controller(command);
                     controller.press();
                 } else System.out.println("No shape selected");
                 break;
@@ -83,23 +111,33 @@ public class Main {
                     System.out.println("This command needs a [color]");
                 else {
                     if (shape != null) {
-                        controller = new Controller(new Color(shape, tokens[1]));
+                        command = new Color(shape, tokens[1]);
+                        originator.set(new ShapeState(command, Shape.copyShape(shape), shapes.indexOf(shape)));
+                        careTaker.addMemento(originator.storeInMemento());
+                        controller = new Controller(command);
                         controller.press();
                     } else System.out.println("No shape selected");
                 }
                 break;
             case "delete":
                 if (shape != null) {
-                    controller = new Controller(new Delete(shapes, shape));
+                    command = new Delete(shapes, shape);
+                    originator.set(new ShapeState(command, Shape.copyShape(shape), shapes.indexOf(shape)));
+                    careTaker.addMemento(originator.storeInMemento());
+                    controller = new Controller(command);
                     controller.press();
                 } else System.out.println("No shape selected");
                 break;
             case "drawscene":
-                controller = new Controller(new DrawScene(shapes));
+                command = new DrawScene(shapes);
+                originator.set(new ShapeState(command, null, -1));
+                careTaker.addMemento(originator.storeInMemento());
+                controller = new Controller(command);
                 controller.press();
                 break;
             case "undo":
-                controller = new Controller(new Undo());
+                command = new Undo();
+                controller = new Controller(command);
                 controller.press();
                 break;
             default:
@@ -121,5 +159,15 @@ public class Main {
         System.out.println("DRAWSCENE");
         System.out.println("UNDO");
         System.out.println("------------------------------------------\n");
+    }
+
+    public static List<Shape> getShapes() {
+        return shapes;
+    }
+    public static CareTaker getCareTaker() {
+        return careTaker;
+    }
+    public static Originator getOriginator() {
+        return originator;
     }
 }

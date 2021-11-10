@@ -1,6 +1,6 @@
 package com.company;
 
-import java.util.List;
+import org.w3c.dom.css.Rect;
 
 public class Shape {
     private int x;
@@ -15,6 +15,16 @@ public class Shape {
         this.y = 0;
 
         isSelected = new IsNotSelected();
+    }
+
+    public static Shape copyShape(Shape shape) {
+        Shape newShape;
+        if (shape instanceof Circle)
+            shape = new Circle((Circle) shape);
+        else if (shape instanceof Rectangle)
+            shape = new Rectangle((Rectangle) shape);
+
+        return shape;
     }
 
     public int getX() {

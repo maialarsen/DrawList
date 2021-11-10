@@ -10,6 +10,15 @@ public class Rectangle extends Shape{
         this.height = height;
     }
 
+    public Rectangle (Rectangle rectangle) {
+        super(rectangle.getColor());
+        setX(rectangle.getX());
+        setY(rectangle.getY());
+        setIsSelected(rectangle.isSelected);
+        width = rectangle.width;
+        height = rectangle.height;
+    }
+
     public int getWidth() {
         return width;
     }
