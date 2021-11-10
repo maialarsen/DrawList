@@ -3,6 +3,7 @@ package com.company;
 import com.company.commands.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,7 +20,6 @@ public class Main {
         String command;
         Scanner sc = new Scanner(System.in);
 
-        printMenu();
         while (sc.hasNext()) {
             command = sc.nextLine();
             processCommand(command);
@@ -32,14 +32,6 @@ public class Main {
                 return shape;
         }
         return null;
-    }
-
-    public static int findShape(Shape shape) {
-        for (int i = 0; i < shapes.size(); i++) {
-            if (shape.equals(shapes.get(i)))
-                return i;
-        }
-        return -1;
     }
 
     static void processCommand(String input) {
@@ -107,8 +99,11 @@ public class Main {
                 } else System.out.println("No shape selected");
                 break;
             case "color":
+                List<String> validColors = Arrays.asList("Red", "Blue", "Orange", "Yellow", "Green");
                 if (tokens.length != 2)
                     System.out.println("This command needs a [color]");
+                else if (!validColors.contains(tokens[1]))
+                    System.out.println("Color must be Red, Blue, Orange, Yellow, or Green");
                 else {
                     if (shape != null) {
                         command = new Color(shape, tokens[1]);
@@ -142,23 +137,8 @@ public class Main {
                 break;
             default:
                 System.out.println("The command: " + tokens[0] + " is not valid");
-                printMenu();
                 break;
         }
-    }
-    static void printMenu() {
-        System.out.println("\n------------------------------------------");
-        System.out.println("Please select a command from the following");
-        System.out.println("CREATE RECTANGLE [width][height]");
-        System.out.println("CREATE CIRCLE [radius]");
-        System.out.println("SELECT [shape #]");
-        System.out.println("MOVE [x][y]");
-        System.out.println("DRAW");
-        System.out.println("COLOR [color]");
-        System.out.println("DELETE");
-        System.out.println("DRAWSCENE");
-        System.out.println("UNDO");
-        System.out.println("------------------------------------------\n");
     }
 
     public static List<Shape> getShapes() {

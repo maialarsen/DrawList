@@ -12,9 +12,6 @@ public class Undo implements Command {
         Memento memento = Main.getCareTaker().getMemento();
         ShapeState prevState = Main.getOriginator().restoreFromMemento(memento);
 
-        System.out.println(prevState.getCommand().getClass().getSimpleName());
-        System.out.println(prevState.getShapeState());
-
         switch (prevState.getCommand().getClass().getSimpleName().toLowerCase()) {
             case "createrectangle":
             case "createcircle":
@@ -22,7 +19,8 @@ public class Undo implements Command {
                 break;
             case "select":
                 Main.findSelected().setIsSelected(new IsNotSelected());
-                Main.getShapes().get(prevState.getIndex()).setIsSelected(new IsSelected());
+                if (prevState.getShapeState() != null)
+                    Main.getShapes().get(prevState.getIndex()).setIsSelected(new IsSelected());
                 break;
             case "move":
                 Main.getShapes().get(prevState.getIndex()).setX(prevState.getShapeState().getX());
@@ -36,13 +34,6 @@ public class Undo implements Command {
                     Main.findSelected().setIsSelected(new IsNotSelected());
                 Main.getShapes().add(prevState.getIndex(), prevState.getShapeState());
                 break;
-            default:
-                break;
         }
-    }
-
-    @Override
-    public void undo() {
-
     }
 }
